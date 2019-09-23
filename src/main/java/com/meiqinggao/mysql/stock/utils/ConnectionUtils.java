@@ -200,6 +200,10 @@ public class ConnectionUtils {
         return String.format(StockURL.CONCEPT_URL, code);
     }
 
+    public static String getFieldUrl(String code) {
+        return String.format(StockURL.FIELD_URL, code);
+    }
+
     public static String addStockCodeDigitPrefix(String code) {
         if (ConstantField.INDEX_LABELS.contains(code)) {
             return ConstantField.INDEX_MAP.get(code);

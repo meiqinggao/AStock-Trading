@@ -8,4 +8,5 @@ public interface StockURL {
     String TUSHARE_DAY_ALL_URL = "http://file.tushare.org/tsdata/h/%s/%s.csv";
     String TUSHARE_PRO_URL = "http://api.waditu.com";
     String CONCEPT_URL = "http://basic.10jqka.com.cn/%s/concept.html";
+    String FIELD_URL = "http://basic.10jqka.com.cn/%s/field.html";
 }
