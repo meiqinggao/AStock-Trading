@@ -146,15 +146,8 @@ public class ConnectionUtils {
         CloseableHttpResponse response = null;
         try {
 //发送get请求
-            String body = "{\n" +
-                    "\t\"api_name\":\"daily\",\n" +
-                    "\t\"token\": \"57b24baa835028cffdd9485b3533ea132fcb983b41a6adad631b3afa\",\n" +
-                    "\t\"params\": {\"trade_date\":\""
-                    + date
-                    + "\"},\n" +
-                    "\t\"fields\":\"ts_code,open,high,low,close,pre_close,pct_chg\"\n" +
-                    "}";
-            HttpPost request = new HttpPost("http://api.waditu.com");
+            String body = String.format(StockURL.TUSHARE_PRO_Daily_BODY, date);
+            HttpPost request = new HttpPost(StockURL.TUSHARE_PRO_Daily_URL);
             request.addHeader("Content-Type", "application/json");
             request.setEntity(new StringEntity(body));
             RequestConfig requestConfig = RequestConfig.custom()
@@ -184,11 +177,11 @@ public class ConnectionUtils {
     }
 
 
-    public static Response getDateResponse(String date) throws FileNotFoundException, UnsupportedEncodingException {
-        String responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_URL, date);
+    public static Response getDailyStockDetailedInfo(String date) throws FileNotFoundException, UnsupportedEncodingException {
+        String responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_Daily_URL, date);
         if (Strings.isBlank(responseString)) {
             log.info("Date: " + date + " that has empty response, try again!" );
-            responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_URL, date);
+            responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_Daily_URL, date);
         }
         Gson gson = new GsonBuilder().create();
         return gson.fromJson(responseString, Response.class);

@@ -17,5 +17,6 @@ public class StockConcept {
     private Long id;
     private String stock_code;
     private String concept;
-//    private String source;
+    private String concept_type;
+    private String source;
 }

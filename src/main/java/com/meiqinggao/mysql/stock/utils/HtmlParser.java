@@ -1,5 +1,6 @@
 package com.meiqinggao.mysql.stock.utils;
 
+import com.meiqinggao.mysql.stock.constant.ConceptType;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,9 +14,12 @@ import java.util.stream.Collectors;
 public class HtmlParser {
 
     public static List<String> parseHtmlConcepts(String conceptHtml) {
+        if (conceptHtml == null) {
+            return new ArrayList<>();
+        }
         Document document = Jsoup.parse(conceptHtml);
         Elements elements = document.getElementsByClass("J_popLink");
-        return elements.stream().map(element -> element.text()).collect(Collectors.toList());
+        return elements.stream().map(Element::text).collect(Collectors.toList());
     }
 
     public static List<String> parseHtmlConcepts(File conceptFile) {
@@ -28,7 +32,7 @@ public class HtmlParser {
         assert document != null;
 
         Elements elements = document.getElementsByClass("J_popLink");
-        return elements.stream().map(element -> element.text()).collect(Collectors.toList());
+        return elements.stream().map(Element::text).collect(Collectors.toList());
     }
 
     public static Map<String, String> parseHtmlField(String fieldHtml) {
@@ -56,9 +60,9 @@ public class HtmlParser {
         List<String> fieldList = Arrays.stream(fieldsString.split("--")).map(String::trim).collect(Collectors.toList());
         return new HashMap<String, String>() {
             {
-                put("first", fieldList.get(0));
-                put("second", fieldList.get(1));
-                put("third", fieldList.get(2));
+                put(ConceptType.FIRST, fieldList.get(0));
+                put(ConceptType.SECOND, fieldList.get(1));
+                put(ConceptType.THIRD, fieldList.get(2));
             }
         };
     }

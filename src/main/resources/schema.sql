@@ -16,7 +16,7 @@ create table if not exists stock_concept (
     id bigint auto_increment,
     stock_code varchar(30),
     concept varchar(255),
-    type enum('concept', 'first', 'second', 'third'),
+    concept_type enum('concept', 'first', 'second', 'third'),
     source varchar(255),
     primary key (id),
     foreign key (stock_code) references stock_list (code),
