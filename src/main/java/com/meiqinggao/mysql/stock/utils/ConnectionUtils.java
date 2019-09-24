@@ -1,8 +1,11 @@
 package com.meiqinggao.mysql.stock.utils;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.meiqinggao.mysql.stock.constant.ConstantField;
 import com.meiqinggao.mysql.stock.constant.StockURL;
+import com.meiqinggao.mysql.stock.model.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,7 +17,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
@@ -176,6 +181,17 @@ public class ConnectionUtils {
             responseClose(response);
         }
         return null;
+    }
+
+
+    public static Response getDateResponse(String date) throws FileNotFoundException, UnsupportedEncodingException {
+        String responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_URL, date);
+        if (Strings.isBlank(responseString)) {
+            log.info("Date: " + date + " that has empty response, try again!" );
+            responseString = ConnectionUtils.getPostHttpEntityString(StockURL.TUSHARE_PRO_URL, date);
+        }
+        Gson gson = new GsonBuilder().create();
+        return gson.fromJson(responseString, Response.class);
     }
 
 
