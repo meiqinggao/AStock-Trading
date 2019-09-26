@@ -41,8 +41,8 @@ public class StockApplication implements ApplicationRunner {
 
 //		StockUtils.saveAllStockCodeAndName(stockRepository, stockDataRetriever);
 //		StockUtils.saveAllStockConcept(stockRepository, stockConceptRepository);
-//		StockUtils.saveAllStockField(stockRepository, stockConceptRepository);
-		StockUtils.saveStockDate_ZT(stockRepository, 15);
+		StockUtils.saveAllStockField(stockRepository, stockConceptRepository);
+//		StockUtils.saveStockDate_ZT(stockRepository, 15);
 
 		System.out.println();
 	}

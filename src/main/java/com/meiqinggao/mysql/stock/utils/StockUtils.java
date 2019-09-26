@@ -75,15 +75,19 @@ public class StockUtils {
 
         int count = 0;
         for (String code : allStockCodes) {
+            if (excludeStockFields.contains(code)) {
+                continue;
+            }
             log.info("Processed field count: " + count);
             String fieldUrl = ConnectionUtils.getFieldUrl(code);
             String response = ConnectionUtils.getHttpEntityString(fieldUrl, "GBK");
             Map<String, String> fieldMap = HtmlParser.parseHtmlField(response);
-            for (Map.Entry<String, String> fieldentry : fieldMap.entrySet()) {
+            for (Map.Entry<String, String> fieldEntry : fieldMap.entrySet()) {
                 StockConcept stockConcept = new StockConcept();
                 stockConcept.setStock_code(code);
-                stockConcept.setConcept(fieldentry.getValue());
-                stockConcept.setConcept_type(fieldentry.getKey());
+                stockConcept.setConcept(fieldEntry.getValue());
+                stockConcept.setConcept_type(fieldEntry.getKey());
+                stockConcept.setSource(StockSource.THS);
                 stockConceptRepository.save(stockConcept);
             }
 
@@ -94,7 +98,6 @@ public class StockUtils {
     public static void saveStockDate_ZT(StockRepository stockRepository, int daysBeforeToday) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
-        dateTime = dateTime.minusDays(1);
 
         int days = 0;
         String lastTradeDate = "";
