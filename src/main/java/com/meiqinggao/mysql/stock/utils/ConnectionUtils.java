@@ -57,7 +57,15 @@ public class ConnectionUtils {
         return responseString;
     }
 
-
+    public static String getHttpEntityStringWithNoProxy(String url, String charset) {
+        int count = 0;
+        String responseString = "";
+        while (count < 3 && Strings.isBlank(responseString)) {
+            responseString = getHttpEntityStringOnceWithNoProxy(url, charset);
+            count++;
+        }
+        return responseString;
+    }
 
     public static String getPostHttpEntityString(String url, String date) {
         int count = 0;
@@ -81,6 +89,7 @@ public class ConnectionUtils {
             HttpGet request = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(5000).setConnectTimeout(5000)
+//                    .setProxy(IpUtils.getHttpHost())
                     .setConnectionRequestTimeout(5000).build();
             request.setConfig(requestConfig);
 
@@ -113,7 +122,41 @@ public class ConnectionUtils {
     private static String getHttpEntityStringOnce(String url, String charset) {
         CloseableHttpResponse response = null;
         try {
-//发送get请求`
+            //发送get请求`
+            HttpGet request = new HttpGet(url);
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setSocketTimeout(5000).setConnectTimeout(5000)
+//                    .setProxy(IpUtils.getHttpHost())
+                    .setConnectionRequestTimeout(5000)
+                    .build();
+            request.setConfig(requestConfig);
+
+            int fetch_times = 5;
+            while (fetch_times > 0 && (response == null
+                    || response.getStatusLine().getStatusCode() != HttpStatus.OK.value())) {
+                responseClose(response);
+                response = httpClient.execute(request);
+                fetch_times--;
+            }
+
+            if (response.getStatusLine().getStatusCode() == HttpStatus.OK.value()) {
+                return EntityUtilsWrapper.toString(response.getEntity(), charset);
+            } else {
+                log.error("get请求提交失败:" + url);
+            }
+        } catch (IOException e) {
+            log.error("get请求提交失败:" + url, e);
+        } finally {
+            responseClose(response);
+        }
+        return null;
+    }
+
+
+    private static String getHttpEntityStringOnceWithNoProxy(String url, String charset) {
+        CloseableHttpResponse response = null;
+        try {
+            //发送get请求`
             HttpGet request = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(5000).setConnectTimeout(5000)
@@ -145,13 +188,15 @@ public class ConnectionUtils {
     private static String getPostHttpEntityStringOnce(String url, String date) {
         CloseableHttpResponse response = null;
         try {
-//发送get请求
+            //发送get请求
             String body = String.format(StockURL.TUSHARE_PRO_Daily_BODY, date);
             HttpPost request = new HttpPost(StockURL.TUSHARE_PRO_Daily_URL);
             request.addHeader("Content-Type", "application/json");
             request.setEntity(new StringEntity(body));
+
             RequestConfig requestConfig = RequestConfig.custom()
                     .setSocketTimeout(5000).setConnectTimeout(5000)
+//                    .setProxy(IpUtils.getHttpHost())
                     .setConnectionRequestTimeout(5000).build();
             request.setConfig(requestConfig);
 

@@ -32,10 +32,16 @@ public class StockApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+//		List<IPBean> ipBeans = HtmlParser.parseHtmlFileIpBeans("file/ip1.html");
+//		List<IPBean> validIpBeans = ipBeans.stream().filter(IpUtils::isValid).collect(Collectors.toList());
+//		IPBean ipBean = new IPBean("120.83.123.169", 9999, "HTTP");
+//		IPBean ipBean = new IPBean("1.197.204.49", 9999, "HTTP");
+//
+//		boolean isvalid = IpUtils.isValid(ipBean);
 
-		StockUtils.saveAllStockCodeAndName(stockRepository, stockDataRetriever);
-		StockUtils.saveAllStockConcept(stockRepository, stockConceptRepository);
-		StockUtils.saveAllStockField(stockRepository, stockConceptRepository);
+//		StockUtils.saveAllStockCodeAndName(stockRepository, stockDataRetriever);
+//		StockUtils.saveAllStockConcept(stockRepository, stockConceptRepository);
+//		StockUtils.saveAllStockField(stockRepository, stockConceptRepository);
 		StockUtils.saveStockDate_ZT(stockRepository, 15);
 
 		System.out.println();

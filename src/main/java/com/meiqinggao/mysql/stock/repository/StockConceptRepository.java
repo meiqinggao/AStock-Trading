@@ -4,4 +4,5 @@ import com.meiqinggao.mysql.stock.model.StockConcept;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockConceptRepository extends JpaRepository<StockConcept, Long> {
+
 }

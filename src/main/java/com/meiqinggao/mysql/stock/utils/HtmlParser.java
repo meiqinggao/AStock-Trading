@@ -1,6 +1,7 @@
 package com.meiqinggao.mysql.stock.utils;
 
 import com.meiqinggao.mysql.stock.constant.ConceptType;
+import com.meiqinggao.mysql.stock.model.IPBean;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,6 +34,37 @@ public class HtmlParser {
 
         Elements elements = document.getElementsByClass("J_popLink");
         return elements.stream().map(Element::text).collect(Collectors.toList());
+    }
+
+    public static List<IPBean> parseHtmlFileIpBeans(String pathToFile) {
+        Document document = parseHtmlFileToDocument(pathToFile);
+        assert document != null;
+        Elements eles = document.selectFirst("table").select("tr");
+        ArrayList<IPBean> ipList = new ArrayList<>();
+        for (int i = 0; i < eles.size(); i++){
+            if (i == 0) continue;
+            Element ele = eles.get(i);
+            String ip = ele.children().get(1).text();
+            int port = Integer.parseInt(ele.children().get(2).text().trim());
+            String typeStr = ele.children().get(5).text().trim();
+
+            if ("HTTP".equalsIgnoreCase(typeStr)){
+                ipList.add(new IPBean(ip, port, "HTTP"));
+            } else {
+                ipList.add(new IPBean(ip, port, "HTTPS"));
+            }
+        }
+        return ipList;
+    }
+
+    public static Document parseHtmlFileToDocument(String pathToFile) {
+        Document document = null;
+        try {
+            return Jsoup.parse(new File(pathToFile), "GBK");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static Map<String, String> parseHtmlField(String fieldHtml) {
