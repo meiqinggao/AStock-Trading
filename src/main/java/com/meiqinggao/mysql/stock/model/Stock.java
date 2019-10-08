@@ -17,6 +17,8 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
-    private String stock_name;
-    private Date recent_zt;
+    @Column(name="stock_name")
+    private String stockName;
+    @Column(name="recent_zt")
+    private Date recentZt;
 }

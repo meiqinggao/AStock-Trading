@@ -138,8 +138,8 @@ public class StockUtils {
             double close = (double)item.get(closeIndex);
             if (isZhangTingForCode(code, pct_chg, close, pre_close) && codes.contains(code)) {
                 Stock stock = stockRepository.findByCode(code);
-                if (stock.getRecent_zt() == null || stock.getRecent_zt().before(dateTime.toDate())){
-                    stock.setRecent_zt(dateTime.toDate());
+                if (stock.getRecentZt() == null || stock.getRecentZt().before(dateTime.toDate())){
+                    stock.setRecentZt(dateTime.toDate());
                     stockRepository.save(stock);
                 }
             }
@@ -165,5 +165,21 @@ public class StockUtils {
     private static boolean isZhangting(double zhangTingFactor, BigDecimal pre_close_decimal, BigDecimal close_decimal) {
         BigDecimal zhangTingPrice = pre_close_decimal.multiply(new BigDecimal(zhangTingFactor)).setScale(2, RoundingMode.HALF_EVEN);
         return zhangTingPrice.compareTo(close_decimal) == 0;
+    }
+
+    private static List<String> allStockNames;
+    private static List<String> allConcepts;
+
+    public static void init(StockRepository stockRepository, StockConceptRepository stockConceptRepository) {
+        allStockNames = stockRepository.findAll().stream().map(Stock::getStockName).distinct().collect(Collectors.toList());
+        allConcepts = stockConceptRepository.findAll().stream().map(StockConcept::getConcept).distinct().collect(Collectors.toList());
+    }
+
+    public static List<String> getAllStockNames() {
+        return allStockNames;
+    }
+
+    public static List<String> getAllConcepts() {
+        return allConcepts;
     }
 }

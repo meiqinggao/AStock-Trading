@@ -54,7 +54,7 @@ public class SinaPreviousDayPriceParser{
             String name = stockMap.get(ConstantField.NAME).toString();
             Stock stock = new Stock();
             stock.setCode(code);
-            stock.setStock_name(name);
+            stock.setStockName(name);
             stocks.add(stock);
         }
 
