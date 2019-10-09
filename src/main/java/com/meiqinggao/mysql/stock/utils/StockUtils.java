@@ -182,4 +182,8 @@ public class StockUtils {
     public static List<String> getAllConcepts() {
         return allConcepts;
     }
+
+    public static List<String> getSuggestedConcepts(String concept){
+        return allConcepts.stream().filter(item -> item.contains(concept)).limit(10).collect(Collectors.toList());
+    }
 }
