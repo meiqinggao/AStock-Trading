@@ -18,8 +18,6 @@
         }
 
         #container {
-            position: relative;
-            top: 30%;
             width: 500px;
             height: 820px;
             margin: auto;
@@ -71,30 +69,30 @@
 <body>
     <div id="container">
         <div>
-        <form class="searchForm" action="#" th:action="@{/search}" th:object="${searchEntity}" method="post">
-            <div class="radio" align="center">
-                <input type="radio" th:field="*{type}" value="All" checked> 所有 &nbsp;&nbsp;&nbsp;
-                <input type="radio" th:field="*{type}" value="Concept"> 概念 &nbsp;&nbsp;&nbsp;
-                <input type="radio" th:field="*{type}" value="Stock"> 股票 <br/>
-            </div>
-            <div class="search">
-                <input class="textBox" type="text" th:field="*{text}" placeholder="请输入概念/行业/股票">
-                <button class="searchButton" type="submit" value="搜索">搜索</button>
-            </div>
-        </form>
-    </div>
+            <form class="searchForm" action="#" th:action="@{/search}" th:object="${searchEntity}" method="post">
+                <div class="radio" align="center">
+                    <input type="radio" th:field="*{type}" value="All" checked> 所有 &nbsp;&nbsp;&nbsp;
+                    <input type="radio" th:field="*{type}" value="Concept"> 概念 &nbsp;&nbsp;&nbsp;
+                    <input type="radio" th:field="*{type}" value="Stock"> 股票 <br/>
+                </div>
+                <div class="search">
+                    <input class="textBox" type="text" th:field="*{text}" placeholder="请输入概念/行业/股票">
+                    <button class="searchButton" type="submit" value="搜索">搜索</button>
+                </div>
+            </form>
+        </div>
         <div th:if="${suggests!=null and !suggests.isEmpty()}">
-        <table border="0" width="100%">
-            <tr>
-                <th>您搜索的概念不准确，您要搜索的是?</th>
-            </tr>
-            <tr th:each="suggest : ${suggests}" align="center">
-                <td>
-                    <a th:text="${suggest}" th:href="@{|/search/${suggest}|}">概念</a>
-                </td>
-            </tr>
-        </table>
+            <table border="0" width="100%">
+                <tr>
+                    <th>您搜索的概念不准确，您要搜索的是?</th>
+                </tr>
+                <tr th:each="suggest : ${suggests}" align="center">
+                    <td>
+                        <a th:text="${suggest}" th:href="@{|/search/${suggest}|}">概念</a>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-</div>
 </body>
 </html>

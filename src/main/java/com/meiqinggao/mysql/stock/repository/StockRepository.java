@@ -7,5 +7,8 @@ import java.util.List;
 
 public interface StockRepository extends JpaRepository<Stock, Long> {
     Stock findByCode(String code);
+
     List<Stock> findStocksByCodeInAndRecentZtIsNotNull(List<String> codes);
+
+    List<Stock> findStocksByCodeIn(List<String> codes);
 }
