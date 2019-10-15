@@ -1,6 +1,7 @@
 package com.meiqinggao.mysql.stock.utils;
 
 import com.meiqinggao.mysql.stock.constant.ConceptType;
+import com.meiqinggao.mysql.stock.constant.ConstantField;
 import com.meiqinggao.mysql.stock.constant.StockSource;
 import com.meiqinggao.mysql.stock.model.Response;
 import com.meiqinggao.mysql.stock.model.Stock;
@@ -15,20 +16,18 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class StockUtils {
-    public static void saveAllStockCodeAndName(StockRepository stockRepository, StockDataRetriever stockDataRetriever) {
+    public static void saveAllStockCodeAndName(StockRepository stockRepository) {
         int PAGE_NUM = 50;
 
         for (int i = 0; i < PAGE_NUM; i++) {
             List<String> excludeStocks = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
             log.info("Start received stock page: " + i);
-            String stocksInfoForPage = stockDataRetriever.getPreviousDayStocksInfoForPage(i);
+            String stocksInfoForPage = StockDataRetriever.getPreviousDayStocksInfoForPage(i);
             List<Stock> subStocks = SinaPreviousDayPriceParser.parseStockCodeAndName(stocksInfoForPage, excludeStocks);
             if (subStocks.size() > 0) {
                 stockRepository.saveAll(subStocks);
@@ -92,9 +91,8 @@ public class StockUtils {
             }
 
             count++;
-	    }
+        }
     }
-
     public static void saveStockDate_ZT(StockRepository stockRepository, int daysBeforeToday) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
@@ -169,9 +167,14 @@ public class StockUtils {
 
     private static List<String> allStockNames;
     private static List<String> allConcepts;
+    private static List<String> allSymbols;
+    private static Map<String, String> allStocksMap;
 
     public static void init(StockRepository stockRepository, StockConceptRepository stockConceptRepository) {
-        allStockNames = stockRepository.findAll().stream().map(Stock::getStockName).distinct().collect(Collectors.toList());
+        List<Stock> allStocks = stockRepository.findAll();
+        allSymbols = allStocks.stream().map(stock -> addStockCodePrefix(stock.getCode())).collect(Collectors.toList());
+        allStocksMap = allStocks.stream().collect(Collectors.toMap(Stock::getCode, Stock::getStockName));
+        allStockNames = new ArrayList<>(allStocksMap.values());
         allConcepts = stockConceptRepository.findAll().stream().map(StockConcept::getConcept).distinct().collect(Collectors.toList());
     }
 
@@ -183,7 +186,31 @@ public class StockUtils {
         return allConcepts;
     }
 
+    public static List<String> getAllSymbols() {
+        return allSymbols;
+    }
+
+    public static Map<String, String> getAllStocksMap() {
+        return allStocksMap;
+    }
+
     public static List<String> getSuggestedConcepts(String concept){
         return allConcepts.stream().filter(item -> item.contains(concept)).limit(10).collect(Collectors.toList());
+    }
+
+    private static String addStockCodePrefix(String code) {
+        if (ConstantField.INDEX_LABELS.contains(code)) {
+            return ConstantField.INDEX_MAP.get(code);
+        }
+
+        if (code.length() != 6) {
+            return code;
+        }
+// logic from tushare _code_to_symbol
+        if (code.startsWith("6") || code.startsWith("5") || code.startsWith("9") || code.startsWith("11") || code.startsWith("13")) {
+            return "sh" + code;
+        }
+
+        return "sz" + code;
     }
 }

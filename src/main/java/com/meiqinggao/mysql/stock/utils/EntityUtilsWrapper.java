@@ -17,7 +17,7 @@ public class EntityUtilsWrapper {
         if (entity == null) {
             return null;
         }
-        int parse_times = 5;
+        int parse_times = 3;
         while (parse_times > 0) {
             try {
                 return EntityUtils.toString(entity, charset);
@@ -34,7 +34,7 @@ public class EntityUtilsWrapper {
         if (entity == null) {
             return null;
         }
-        int parse_times = 5;
+        int parse_times = 3;
         while (parse_times > 0) {
             try {
                 return EntityUtils.toByteArray(entity);

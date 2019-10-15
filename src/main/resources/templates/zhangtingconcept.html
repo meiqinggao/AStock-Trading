@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Stock Quant</title>
+</head>
+
+<body>
+<div>
+    <table border="0" width="100%">
+        <tr>
+            <th>概念</th>
+            <th>涨停个数</th>
+        </tr>
+        <tr th:each="concept : ${hotConcepts}" align="center">
+            <td th:text="${concept.getKey()}">January</td>
+            <td th:text="${concept.getValue().size()}">January</td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

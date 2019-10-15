@@ -88,12 +88,12 @@ public class ConnectionUtils {
 //发送get请求
             HttpGet request = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(5000).setConnectTimeout(5000)
+                    .setSocketTimeout(3000).setConnectTimeout(3000)
 //                    .setProxy(IpUtils.getHttpHost())
                     .setConnectionRequestTimeout(5000).build();
             request.setConfig(requestConfig);
 
-            int fetch_times = 5;
+            int fetch_times = 3;
             while (fetch_times > 0 && (response == null
                     || response.getStatusLine().getStatusCode() != HttpStatus.OK.value())) {
                 responseClose(response);
@@ -125,13 +125,13 @@ public class ConnectionUtils {
             //发送get请求`
             HttpGet request = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(5000).setConnectTimeout(5000)
+                    .setSocketTimeout(3000).setConnectTimeout(3000)
 //                    .setProxy(IpUtils.getHttpHost())
                     .setConnectionRequestTimeout(5000)
                     .build();
             request.setConfig(requestConfig);
 
-            int fetch_times = 5;
+            int fetch_times = 3;
             while (fetch_times > 0 && (response == null
                     || response.getStatusLine().getStatusCode() != HttpStatus.OK.value())) {
                 responseClose(response);
@@ -159,12 +159,12 @@ public class ConnectionUtils {
             //发送get请求`
             HttpGet request = new HttpGet(url);
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(5000).setConnectTimeout(5000)
+                    .setSocketTimeout(3000).setConnectTimeout(3000)
                     .setConnectionRequestTimeout(5000)
                     .build();
             request.setConfig(requestConfig);
 
-            int fetch_times = 5;
+            int fetch_times = 3;
             while (fetch_times > 0 && (response == null
                     || response.getStatusLine().getStatusCode() != HttpStatus.OK.value())) {
                 responseClose(response);
@@ -195,12 +195,12 @@ public class ConnectionUtils {
             request.setEntity(new StringEntity(body));
 
             RequestConfig requestConfig = RequestConfig.custom()
-                    .setSocketTimeout(5000).setConnectTimeout(5000)
+                    .setSocketTimeout(3000).setConnectTimeout(3000)
 //                    .setProxy(IpUtils.getHttpHost())
                     .setConnectionRequestTimeout(5000).build();
             request.setConfig(requestConfig);
 
-            int fetch_times = 5;
+            int fetch_times = 3;
             while (fetch_times > 0 && (response == null
                     || response.getStatusLine().getStatusCode() != HttpStatus.OK.value())) {
                 responseClose(response);

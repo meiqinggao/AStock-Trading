@@ -2,6 +2,8 @@ package com.meiqinggao.mysql.stock.controller;
 
 import com.meiqinggao.mysql.stock.model.SearchEntity;
 import com.meiqinggao.mysql.stock.model.Stock;
+import com.meiqinggao.mysql.stock.model.ZhangTingStock;
+import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.HttpUtils;
@@ -16,10 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Controller
@@ -29,6 +29,11 @@ public class SearchController {
     private StockConceptRepository stockConceptRepository;
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private ZhangTingStocks zhangTingStocks;
+
+    private Map<String, Set<String>> conceptToStockCodesMap = new HashMap<>();
+    private List<String> existedCodes = new ArrayList<>();
 
     @GetMapping({"/", "/search"})
     public String home(Model model) {
@@ -45,6 +50,46 @@ public class SearchController {
             conceptLastTime = concept;
             return "concept";
         }
+    }
+
+    @GetMapping("/zt")
+    public String zhangTing(Model model) {
+        ArrayList<ZhangTingStock> zhangTingStockList = new ArrayList<>(this.zhangTingStocks.values());
+        zhangTingStockList.sort(Comparator.comparing(ZhangTingStock::getTime).reversed());
+
+        model.addAttribute("zhangTingStocks", zhangTingStockList);
+        return "zhangting";
+    }
+
+    @GetMapping("/ztc")
+    public String zhangTingConcept(Model model) {
+        List<String> toRemoveCodes = existedCodes.stream().filter(code -> !zhangTingStocks.containsKey(code)).collect(Collectors.toList());
+        List<String> newAddedCodes = zhangTingStocks.keySet().stream().filter(code -> !existedCodes.contains(code)).collect(Collectors.toList());
+
+        for (String toRemoveCode : toRemoveCodes) {
+            conceptToStockCodesMap.values().forEach(codes -> codes.remove(toRemoveCode));
+        }
+
+        for (String newAddedCode : newAddedCodes) {
+            List<String> concepts = stockConceptRepository.findStockConceptsByStock_code(newAddedCode);
+            for (String concept : concepts) {
+                if (conceptToStockCodesMap.containsKey(concept)) {
+                    conceptToStockCodesMap.get(concept).add(newAddedCode);
+                } else {
+                    HashSet<String> codeSets = new HashSet<>();
+                    codeSets.add(newAddedCode);
+                    conceptToStockCodesMap.put(concept, codeSets);
+                }
+            }
+        }
+
+        ArrayList<Map.Entry<String, Set<String>>> list = new ArrayList<>(conceptToStockCodesMap.entrySet());
+        list.sort((o1, o2) -> (o2.getValue().size() - o1.getValue().size()));
+
+
+
+        model.addAttribute("hotConcepts", list.subList(0, 15));
+        return "zhangtingconcept";
     }
 
     @PostMapping(value = "/search")

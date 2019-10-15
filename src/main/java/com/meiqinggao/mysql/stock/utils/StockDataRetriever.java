@@ -11,7 +11,7 @@ import java.util.List;
 public class StockDataRetriever {
     private static final int BATCH_SIZE = 500;
 
-    public String retrieveAllSinaRealtimeStocksData(List<String> symbols) {
+    public static String retrieveAllSinaRealtimeStocksData(List<String> symbols) {
         //初始化设定 StringBuilder大小，提高性能。每一个item 大约250个字符
         StringBuilder stringBuilder = new StringBuilder(250*symbols.size());
         int startIndex = 0;
@@ -27,16 +27,16 @@ public class StockDataRetriever {
             stringBuilder.append(subStocksInfo);
             startIndex = startIndex + BATCH_SIZE;
         }
-        log.info("the size of stringBuilder of realTime stocks Data is ", (double)stringBuilder.toString().length());
+        log.info("the size of stringBuilder of realTime stocks Data is " + (double)stringBuilder.toString().length());
         return stringBuilder.toString();
     }
 
-    public String retrieveSubSinaRealtimeStocksData(Collection<String> subSymbols) {
+    public static String retrieveSubSinaRealtimeStocksData(Collection<String> subSymbols) {
         String realtimeUrl = ConnectionUtils.getSinaRealTimeUrl(subSymbols);
         return ConnectionUtils.getHttpEntityString(realtimeUrl);
     }
 
-    public String getPreviousDayStocksInfoForPage(int page) {
+    public static String getPreviousDayStocksInfoForPage(int page) {
         String url = ConnectionUtils.getSinaDayPriceUrl(page);
         return ConnectionUtils.getHttpEntityString(url);
     }

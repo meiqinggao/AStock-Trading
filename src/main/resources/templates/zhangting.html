@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <title>Stock Quant</title>
+    </head>
+
+    <body>
+        <div>
+            <table border="0" width="100%">
+                <tr>
+                    <th>代码</th>
+                    <th>股票</th>
+                    <th>涨停日期</th>
+                </tr>
+                <tr th:each="stock : ${zhangTingStocks}" align="center">
+                    <td th:text="${stock.code}">January</td>
+                    <td th:text="${stock.name}">January</td>
+                    <td th:text="${stock.time}">January</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
