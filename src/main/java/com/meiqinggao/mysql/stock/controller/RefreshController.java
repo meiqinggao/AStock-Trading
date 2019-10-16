@@ -1,5 +1,6 @@
 package com.meiqinggao.mysql.stock.controller;
 
+import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.HttpUtils;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
@@ -20,16 +21,25 @@ import java.io.UnsupportedEncodingException;
 public class RefreshController {
     @Autowired
     private StockRepository stockRepository;
+    @Autowired
+    private StockConceptRepository stockConceptRepository;
 
     @GetMapping("/refresh/{days}")
     public String refreshStockUpLimit(@PathVariable("days") int days, Model model) throws FileNotFoundException, UnsupportedEncodingException {
-        StockUtils.saveStockDate_ZT(stockRepository, days);
+        StockUtils.refreshStockDate_ZT(stockRepository, days);
         return HttpUtils.getDefaultHomeModel(model);
     }
 
     @GetMapping("/refresh")
     public String refreshStockUpLimitForOneDay(Model model) throws FileNotFoundException, UnsupportedEncodingException {
-        StockUtils.saveStockDate_ZT(stockRepository, 2);
+        StockUtils.refreshStockDate_ZT(stockRepository, 2);
+        return HttpUtils.getDefaultHomeModel(model);
+    }
+
+    @GetMapping("/refreshAll")
+    public String refreshAllConceptAndField(Model model) throws FileNotFoundException, UnsupportedEncodingException {
+        StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository,200);
+        StockUtils.refreshAllStockField(stockRepository, stockConceptRepository,200);
         return HttpUtils.getDefaultHomeModel(model);
     }
 }

@@ -36,10 +36,10 @@ public class StockApplication implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		StockUtils.init(stockRepository, stockConceptRepository);
 
-//		StockUtils.saveAllStockCodeAndName(stockRepository, stockDataRetriever);
-//		StockUtils.saveAllStockConcept(stockRepository, stockConceptRepository);
-//		StockUtils.saveAllStockField(stockRepository, stockConceptRepository);
-//		StockUtils.saveStockDate_ZT(stockRepository, 20);
+//		StockUtils.refreshAllStockCodeAndName(stockRepository, stockDataRetriever);
+		StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository, 100);
+		StockUtils.refreshAllStockField(stockRepository, stockConceptRepository, 100);
+//		StockUtils.refreshStockDate_ZT(stockRepository, 20);
 	}
 
 

@@ -12,4 +12,7 @@ public interface StockConceptRepository extends JpaRepository<StockConcept, Long
 
     @Query(value = "select concept from stock_concept where stock_code= ?1 and concept_type != \"first\" ", nativeQuery = true)
     List<String> findStockConceptsByStock_code(String code);
+
+    @Query(value = "select count(*) from stock_concept where stock_code= ?1 and concept = ?2 and concept_type = ?3 ", nativeQuery = true)
+    Integer findStockCodeByUniqueness(String code, String concept, String concept_type);
 }

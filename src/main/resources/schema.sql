@@ -21,5 +21,5 @@ create table if not exists stock_concept (
     primary key (id),
     foreign key (stock_code) references stock_list (code),
     key index_concept (concept),
-    UNIQUE key (stock_code, concept)
+    UNIQUE key (stock_code, concept, concept_type)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;

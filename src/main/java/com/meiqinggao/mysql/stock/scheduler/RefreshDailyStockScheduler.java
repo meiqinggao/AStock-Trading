@@ -19,6 +19,6 @@ public class RefreshDailyStockScheduler {
     //刷新每天涨停股票
     @Scheduled(cron = "0 0 8,16 ? * 1-5", zone = "CTT")
     public void refreshDailyStockUpLimit() throws FileNotFoundException, UnsupportedEncodingException {
-        StockUtils.saveStockDate_ZT(stockRepository, 15);
+        StockUtils.refreshStockDate_ZT(stockRepository, 15);
     }
 }

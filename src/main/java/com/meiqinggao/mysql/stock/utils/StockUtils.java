@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class StockUtils {
-    public static void saveAllStockCodeAndName(StockRepository stockRepository) {
+    public static void refreshAllStockCodeAndName(StockRepository stockRepository) {
         int PAGE_NUM = 50;
 
         for (int i = 0; i < PAGE_NUM; i++) {
@@ -35,20 +35,20 @@ public class StockUtils {
         }
     }
 
-    public static void saveAllStockConcept(StockRepository stockRepository, StockConceptRepository stockConceptRepository){
+    public static void refreshAllStockConcept(StockRepository stockRepository, StockConceptRepository stockConceptRepository, int sleepTimeInMillis){
         List<String> allStockCodes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         Set<String> excludeStockConcepts = stockConceptRepository.findAll().stream()
                 .filter(stockConcept ->ConceptType.CONCEPT.equals(stockConcept.getConcept_type()))
                 .map(StockConcept::getStock_code)
                 .collect(Collectors.toSet());
-        log.info(excludeStockConcepts + " size is " + excludeStockConcepts.size());
+        log.info("Already available size is " + excludeStockConcepts.size());
         int count = 0;
         for (String code : allStockCodes) {
             if (excludeStockConcepts.contains(code)) {
                 continue;
             }
             log.info("Processed concept count: " + count);
-
+            sleepInMillis(sleepTimeInMillis);
             String url = ConnectionUtils.getConceptUrl(code);
             String response = ConnectionUtils.getHttpEntityString(url, "GBK");
             List<String> concepts = HtmlParser.parseHtmlConcepts(response);
@@ -59,13 +59,17 @@ public class StockUtils {
                 stockConcept.setConcept_type(ConceptType.CONCEPT);
                 stockConcept.setStock_code(code);
                 stockConcept.setSource(StockSource.THS);
-                stockConceptRepository.save(stockConcept);
+
+                if (stockConceptRepository.findStockCodeByUniqueness(stockConcept.getStock_code(), stockConcept.getConcept(), stockConcept.getConcept_type()) == 0) {
+                    stockConceptRepository.save(stockConcept);
+                }
+
             }
             count++;
         }
     }
 
-    public static void saveAllStockField(StockRepository stockRepository, StockConceptRepository stockConceptRepository) {
+    public static void refreshAllStockField(StockRepository stockRepository, StockConceptRepository stockConceptRepository, int sleepTimeInMillis) {
         List<String> allStockCodes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         Set<String> excludeStockFields = stockConceptRepository.findAll().stream()
                 .filter(stockConcept ->ConceptType.FIRST.equals(stockConcept.getConcept_type()))
@@ -78,6 +82,7 @@ public class StockUtils {
                 continue;
             }
             log.info("Processed field count: " + count);
+            sleepInMillis(sleepTimeInMillis);
             String fieldUrl = ConnectionUtils.getFieldUrl(code);
             String response = ConnectionUtils.getHttpEntityString(fieldUrl, "GBK");
             Map<String, String> fieldMap = HtmlParser.parseHtmlField(response);
@@ -87,13 +92,19 @@ public class StockUtils {
                 stockConcept.setConcept(fieldEntry.getValue());
                 stockConcept.setConcept_type(fieldEntry.getKey());
                 stockConcept.setSource(StockSource.THS);
-                stockConceptRepository.save(stockConcept);
+                if (code.equals("603868")) {
+                    System.out.println();
+                }
+
+                if (stockConceptRepository.findStockCodeByUniqueness(stockConcept.getStock_code(), stockConcept.getConcept(), stockConcept.getConcept_type()) == 0) {
+                    stockConceptRepository.save(stockConcept);
+                }
             }
 
             count++;
         }
     }
-    public static void saveStockDate_ZT(StockRepository stockRepository, int daysBeforeToday) throws FileNotFoundException, UnsupportedEncodingException {
+    public static void refreshStockDate_ZT(StockRepository stockRepository, int daysBeforeToday) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
 
@@ -212,5 +223,13 @@ public class StockUtils {
         }
 
         return "sz" + code;
+    }
+
+    private static void sleepInMillis(int sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
