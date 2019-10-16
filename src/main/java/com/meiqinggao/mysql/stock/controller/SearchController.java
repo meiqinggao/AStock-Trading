@@ -1,9 +1,6 @@
 package com.meiqinggao.mysql.stock.controller;
 
-import com.meiqinggao.mysql.stock.model.SearchEntity;
-import com.meiqinggao.mysql.stock.model.Stock;
-import com.meiqinggao.mysql.stock.model.ZhangTingStock;
-import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
+import com.meiqinggao.mysql.stock.model.*;
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.HttpUtils;
@@ -31,9 +28,8 @@ public class SearchController {
     private StockRepository stockRepository;
     @Autowired
     private ZhangTingStocks zhangTingStocks;
-
-    private Map<String, Set<String>> conceptToStockCodesMap = new HashMap<>();
-    private List<String> existedCodes = new ArrayList<>();
+    @Autowired
+    private ZhangTingConcepts zhangTingConcepts;
 
     @GetMapping({"/", "/search"})
     public String home(Model model) {
@@ -63,32 +59,10 @@ public class SearchController {
 
     @GetMapping("/ztc")
     public String zhangTingConcept(Model model) {
-        List<String> toRemoveCodes = existedCodes.stream().filter(code -> !zhangTingStocks.containsKey(code)).collect(Collectors.toList());
-        List<String> newAddedCodes = zhangTingStocks.keySet().stream().filter(code -> !existedCodes.contains(code)).collect(Collectors.toList());
+        ArrayList<Map.Entry<String, HashSet<String>>> list = new ArrayList<>(zhangTingConcepts.entrySet());
+        List<Map.Entry<String, HashSet<String>>> hotConcepts = list.stream().sorted((o1, o2) -> (o2.getValue().size() - o1.getValue().size())).limit(15).collect(Collectors.toList());
 
-        for (String toRemoveCode : toRemoveCodes) {
-            conceptToStockCodesMap.values().forEach(codes -> codes.remove(toRemoveCode));
-        }
-
-        for (String newAddedCode : newAddedCodes) {
-            List<String> concepts = stockConceptRepository.findStockConceptsByStock_code(newAddedCode);
-            for (String concept : concepts) {
-                if (conceptToStockCodesMap.containsKey(concept)) {
-                    conceptToStockCodesMap.get(concept).add(newAddedCode);
-                } else {
-                    HashSet<String> codeSets = new HashSet<>();
-                    codeSets.add(newAddedCode);
-                    conceptToStockCodesMap.put(concept, codeSets);
-                }
-            }
-        }
-
-        ArrayList<Map.Entry<String, Set<String>>> list = new ArrayList<>(conceptToStockCodesMap.entrySet());
-        list.sort((o1, o2) -> (o2.getValue().size() - o1.getValue().size()));
-
-
-
-        model.addAttribute("hotConcepts", list.subList(0, 15));
+        model.addAttribute("hotConcepts", hotConcepts);
         return "zhangtingconcept";
     }
 

@@ -2,6 +2,7 @@ package com.meiqinggao.mysql.stock;
 
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
+import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import com.meiqinggao.mysql.stock.utils.SinaPreviousDayPriceParser;
 import com.meiqinggao.mysql.stock.utils.StockDataRetriever;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
@@ -27,6 +28,8 @@ public class StockApplication implements ApplicationRunner {
 	private StockDataRetriever stockDataRetriever;
 	@Autowired
 	private SinaPreviousDayPriceParser parser;
+	@Autowired
+	private RealtimeDataParser realtimeDataParser;
 
 	public static void main(String[] args) {
 		SpringApplication.run(StockApplication.class, args);
@@ -35,10 +38,10 @@ public class StockApplication implements ApplicationRunner {
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		StockUtils.init(stockRepository, stockConceptRepository);
-
+		realtimeDataParser.retrieveAndParseStockData();
 //		StockUtils.refreshAllStockCodeAndName(stockRepository, stockDataRetriever);
-		StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository, 100);
-		StockUtils.refreshAllStockField(stockRepository, stockConceptRepository, 100);
+//		StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository, 100);
+//		StockUtils.refreshAllStockField(stockRepository, stockConceptRepository, 100);
 //		StockUtils.refreshStockDate_ZT(stockRepository, 20);
 	}
 

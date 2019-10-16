@@ -3,6 +3,7 @@ package com.meiqinggao.mysql.stock.controller;
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.HttpUtils;
+import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,8 @@ public class RefreshController {
     private StockRepository stockRepository;
     @Autowired
     private StockConceptRepository stockConceptRepository;
+    @Autowired
+    private RealtimeDataParser realtimeDataParser;
 
     @GetMapping("/refresh/{days}")
     public String refreshStockUpLimit(@PathVariable("days") int days, Model model) throws FileNotFoundException, UnsupportedEncodingException {
@@ -36,10 +39,25 @@ public class RefreshController {
         return HttpUtils.getDefaultHomeModel(model);
     }
 
-    @GetMapping("/refreshAll")
+    @GetMapping("/refreshall")
     public String refreshAllConceptAndField(Model model) throws FileNotFoundException, UnsupportedEncodingException {
+        stockConceptRepository.truncateStockConcept();
         StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository,200);
         StockUtils.refreshAllStockField(stockRepository, stockConceptRepository,200);
         return HttpUtils.getDefaultHomeModel(model);
+    }
+
+    @GetMapping("/refreshall/{time}")
+    public String refreshAllConceptAndFieldWithSleepTime(@PathVariable("time") int time, Model model) throws FileNotFoundException, UnsupportedEncodingException {
+        stockConceptRepository.truncateStockConcept();
+        StockUtils.refreshAllStockConcept(stockRepository, stockConceptRepository, time);
+        StockUtils.refreshAllStockField(stockRepository, stockConceptRepository, time);
+        return HttpUtils.getDefaultHomeModel(model);
+    }
+
+    @GetMapping("/refreshzt")
+    public String refreshZhangTingStocks() {
+        realtimeDataParser.retrieveAndParseStockData();
+        return "redirect:/zt";
     }
 }
