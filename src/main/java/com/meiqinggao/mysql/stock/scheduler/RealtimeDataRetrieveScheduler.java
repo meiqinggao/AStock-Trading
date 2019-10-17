@@ -1,5 +1,6 @@
 package com.meiqinggao.mysql.stock.scheduler;
 
+import com.meiqinggao.mysql.stock.model.ZhangTingConcepts;
 import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
 import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +14,18 @@ public class RealtimeDataRetrieveScheduler {
     @Autowired
     private ZhangTingStocks zhangTingStocks;
     @Autowired
+    private ZhangTingConcepts zhangTingConcepts;
+    @Autowired
     private RealtimeDataParser realtimeDataParser;
 
-    @Scheduled(cron = "0 0 9 ? * 1-5", zone = "CTT")
+    @Scheduled(cron = "30 25 9 ? * 1-5", zone = "CTT")
     public void resetOnMorning() {
         zhangTingStocks.clear();
+        zhangTingConcepts.clear();
+        realtimeDataParser.retrieveAndParseStockData();
     }
 
-    @Scheduled(cron = "30 25 9 ? * 1-5", zone = "CTT")
+
     @Scheduled(cron = "30 26 9 ? * 1-5", zone = "CTT")
     @Scheduled(cron = "30 30-59/1 9 ? * 1-5", zone = "CTT")
     @Scheduled(cron = "30 */1 10 ? * 1-5", zone = "CTT")

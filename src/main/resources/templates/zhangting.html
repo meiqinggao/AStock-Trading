@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-        <title>Stock Quant</title>
+        <title>涨停</title>
     </head>
 
     <body>
@@ -12,7 +12,7 @@
                 <tr>
                     <th>代码</th>
                     <th>股票</th>
-                    <th>涨停日期</th>
+                    <th>涨停时间</th>
                 </tr>
                 <tr th:each="stock : ${zhangTingStocks}" align="center">
                     <td th:text="${stock.code}">January</td>
