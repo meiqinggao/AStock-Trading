@@ -18,19 +18,16 @@ public class RealtimeDataRetrieveScheduler {
     @Autowired
     private RealtimeDataParser realtimeDataParser;
 
-    @Scheduled(cron = "30 25 9 ? * 1-5", zone = "CTT")
+    @Scheduled(cron = "0 24 9 ? * 1-5", zone = "CTT")
     public void resetOnMorning() {
         zhangTingStocks.clear();
         zhangTingConcepts.clear();
-        realtimeDataParser.retrieveAndParseStockData();
     }
 
 
-    @Scheduled(cron = "30 26 9 ? * 1-5", zone = "CTT")
-    @Scheduled(cron = "30 30-59/1 9 ? * 1-5", zone = "CTT")
-    @Scheduled(cron = "30 */1 10 ? * 1-5", zone = "CTT")
-    @Scheduled(cron = "30 0-30/1 11 ? * 1-5", zone = "CTT")
-    @Scheduled(cron = "30 */1 13,14 ? * 1-5", zone = "CTT")
+    @Scheduled(cron = "*/30 25-59 9 ? * 1-5", zone = "CTT")
+    @Scheduled(cron = "*/30 0-31 11 ? * 1-5", zone = "CTT")
+    @Scheduled(cron = "*/30 * 10,13,14 ? * 1-5", zone = "CTT")
     @Scheduled(cron = "30 0 15 ? * 1-5", zone = "CTT")
     public void getAllZhangTingStocks() {
         realtimeDataParser.retrieveAndParseStockData();

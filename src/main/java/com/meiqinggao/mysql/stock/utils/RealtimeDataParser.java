@@ -5,6 +5,7 @@ import com.meiqinggao.mysql.stock.model.ZhangTingConcepts;
 import com.meiqinggao.mysql.stock.model.ZhangTingStock;
 import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class RealtimeDataParser {
     @Autowired
@@ -23,6 +25,7 @@ public class RealtimeDataParser {
     private StockConceptRepository stockConceptRepository;
 
     public void retrieveAndParseStockData() {
+	log.info("Start retrive real time stock data...");	
         String retrievedStockData = StockDataRetriever.retrieveAllSinaRealtimeStocksData(StockUtils.getAllSymbols());
         List<RealtimeStock> realtimeStocks = StockParser.parseSourceDataToStocks(retrievedStockData);
         List<String> codesZhangTing = realtimeStocks.stream().filter(RealtimeStock::isZhangTing).map(RealtimeStock::getCode).collect(Collectors.toList());
@@ -48,5 +51,6 @@ public class RealtimeDataParser {
             zhangTingStocks.remove(toRemoveCode);
             zhangTingConcepts.values().forEach(codes -> codes.remove(toRemoveCode));
         }
+    	log.info("Finish retrieving real time data.");
     }
 }
