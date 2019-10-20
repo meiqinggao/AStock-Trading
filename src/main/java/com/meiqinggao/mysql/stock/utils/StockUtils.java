@@ -133,7 +133,7 @@ public class StockUtils {
         }
     }
 
-    public static Map<String, Integer> initPreviousZhangTingStocks(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
+    private static Map<String, Integer> initPreviousZhangTingStocks(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
         boolean firstTime = true;
@@ -252,6 +252,10 @@ public class StockUtils {
         allStocksMap = allStocks.stream().collect(Collectors.toMap(Stock::getCode, Stock::getStockName));
         allStockNames = new ArrayList<>(allStocksMap.values());
         allConcepts = stockConceptRepository.findAll().stream().map(StockConcept::getConcept).distinct().collect(Collectors.toList());
+        initConsecutiveZhangTings(stockRepository);
+    }
+
+    public static void initConsecutiveZhangTings(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
         consecutiveZhangTings = StockUtils.initPreviousZhangTingStocks(stockRepository);
     }
 
