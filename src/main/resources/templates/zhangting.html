@@ -16,7 +16,7 @@
                 </tr>
                 <tr th:each="stock : ${zhangTingStocks}" align="center">
                     <td th:text="${stock.code}">January</td>
-                    <td th:text="${stock.name}">January</td>
+                    <td th:text="${stock.name} + ' ' + (${stock.zhangTingCount>1}? ${stock.zhangTingCount} : ' ')">January</td>
                     <td th:text="${stock.time}">January</td>
                 </tr>
             </table>

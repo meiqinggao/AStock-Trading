@@ -104,6 +104,7 @@ public class StockUtils {
             count++;
         }
     }
+
     public static void refreshStockDate_ZT(StockRepository stockRepository, int daysBeforeToday) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
@@ -116,7 +117,7 @@ public class StockUtils {
                 String date = dateTime.toString("YYYYMMdd");
                 Response response = ConnectionUtils.getDailyStockDetailedInfo(date);
                 if (response.getData().getItems().size() > 0){
-                    parseDailyStockResponse(stockRepository, codes, response, dateTime);
+                    saveDailyZhangTingStocksToDB(stockRepository, codes, response, dateTime);
                     log.info("date that has response is " + date);
                     days++;
                     if (days == 1) {
@@ -132,8 +133,51 @@ public class StockUtils {
         }
     }
 
+    public static Map<String, Integer> initPreviousZhangTingStocks(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
+        List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
+        DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
+        boolean firstTime = true;
+        HashMap<String, Integer> zhangTingCount = new HashMap<>();
+        Set<Object> lastZhangTings = new HashSet<>();
+        Set<Object> consecutiveZhangTings = new HashSet<>();
 
-    public static void parseDailyStockResponse(StockRepository stockRepository, List<String> codes, Response response, DateTime dateTime) throws FileNotFoundException, UnsupportedEncodingException {
+        while (true) {
+            int dayOfWeek = dateTime.getDayOfWeek();
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                String date = dateTime.toString("YYYYMMdd");
+                Response response = ConnectionUtils.getDailyStockDetailedInfo(date);
+                if (response.getData().getItems().size() > 0){
+                    List<String> dailyZhangTingCodes = getDailyZhangTingCodes(codes, response);
+                    if (firstTime) {
+                        dailyZhangTingCodes.forEach(code -> {
+                            zhangTingCount.put(code, 1);
+                            consecutiveZhangTings.add(code);
+                        });
+                        firstTime = false;
+                    } else {
+                        for (String code : dailyZhangTingCodes) {
+                            if (lastZhangTings.contains(code) && zhangTingCount.containsKey(code)) {
+                                zhangTingCount.put(code, zhangTingCount.get(code) + 1);
+                                consecutiveZhangTings.add(code);
+                            }
+                        }
+                    }
+                }
+            }
+            dateTime = dateTime.minusDays(1);
+            if (consecutiveZhangTings.size() == 0 && !firstTime) {
+                break;
+            }
+            lastZhangTings.clear();
+            lastZhangTings.addAll(consecutiveZhangTings);
+            consecutiveZhangTings.clear();
+        }
+
+        return zhangTingCount;
+    }
+
+
+    public static void saveDailyZhangTingStocksToDB(StockRepository stockRepository, List<String> codes, Response response, DateTime dateTime) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> fields = response.getData().getFields();
         int ts_codeIndex = fields.indexOf("ts_code");
         int pct_chgIndex = fields.indexOf("pct_chg");
@@ -153,6 +197,26 @@ public class StockUtils {
                 }
             }
         }
+    }
+
+    public static List<String> getDailyZhangTingCodes(List<String> codes, Response response) {
+        List<String> fields = response.getData().getFields();
+        int ts_codeIndex = fields.indexOf("ts_code");
+        int pct_chgIndex = fields.indexOf("pct_chg");
+        int pre_closeIndex = fields.indexOf("pre_close");
+        int closeIndex = fields.indexOf("close");
+        List<List<Object>> items = response.getData().getItems();
+        LinkedList<String> zhangTingCodes = new LinkedList<>();
+        for (List<Object> item : items) {
+            String code = item.get(ts_codeIndex).toString().substring(0, 6);
+            double pct_chg = (double)item.get(pct_chgIndex);
+            double pre_close = (double)item.get(pre_closeIndex);
+            double close = (double)item.get(closeIndex);
+            if (isZhangTingForCode(code, pct_chg, close, pre_close) && codes.contains(code)) {
+                zhangTingCodes.add(code);
+            }
+        }
+        return zhangTingCodes;
     }
 
     public static boolean isZhangTingForCode(String code, double pct_chg, double close, double pre_close) {
@@ -180,13 +244,15 @@ public class StockUtils {
     private static List<String> allConcepts;
     private static List<String> allSymbols;
     private static Map<String, String> allStocksMap;
+    private static Map<String, Integer> consecutiveZhangTings;
 
-    public static void init(StockRepository stockRepository, StockConceptRepository stockConceptRepository) {
+    public static void init(StockRepository stockRepository, StockConceptRepository stockConceptRepository) throws FileNotFoundException, UnsupportedEncodingException {
         List<Stock> allStocks = stockRepository.findAll();
         allSymbols = allStocks.stream().map(stock -> addStockCodePrefix(stock.getCode())).collect(Collectors.toList());
         allStocksMap = allStocks.stream().collect(Collectors.toMap(Stock::getCode, Stock::getStockName));
         allStockNames = new ArrayList<>(allStocksMap.values());
         allConcepts = stockConceptRepository.findAll().stream().map(StockConcept::getConcept).distinct().collect(Collectors.toList());
+        consecutiveZhangTings = StockUtils.initPreviousZhangTingStocks(stockRepository);
     }
 
     public static List<String> getAllStockNames() {
@@ -203,6 +269,10 @@ public class StockUtils {
 
     public static Map<String, String> getAllStocksMap() {
         return allStocksMap;
+    }
+
+    public static Map<String, Integer> getConsecutiveZhangTings() {
+        return consecutiveZhangTings;
     }
 
     public static List<String> getSuggestedConcepts(String concept){

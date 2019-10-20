@@ -9,4 +9,5 @@ public class ZhangTingStock {
     private String code;
     private String name;
     private String time;
+    private int zhangTingCount;
 }

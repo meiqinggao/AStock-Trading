@@ -34,7 +34,11 @@ public class RealtimeDataParser {
         List<String> toRemoveCodes = zhangTingStocks.keySet().stream().filter(code -> !codesZhangTing.contains(code)).collect(Collectors.toList());
         for (String code : codesZhangTing) {
             if (!zhangTingStocks.containsKey(code)){
-                zhangTingStocks.put(code, new ZhangTingStock(code, StockUtils.getAllStocksMap().get(code), DateTime.now().toString("HH:mm")));
+                int zhangTingCount = 1;
+                if (StockUtils.getConsecutiveZhangTings().containsKey(code)) {
+                    zhangTingCount = StockUtils.getConsecutiveZhangTings().get(code) + 1;
+                }
+                zhangTingStocks.put(code, new ZhangTingStock(code, StockUtils.getAllStocksMap().get(code), DateTime.now().toString("HH:mm"), zhangTingCount));
 
                 List<String> concepts = stockConceptRepository.findStockConceptsByStock_code(code);
                 for (String concept : concepts) {
