@@ -271,22 +271,6 @@ public class ConnectionUtils {
         return "1" + code;
     }
 
-    public static String addStockCodePrefix(String code) {
-        if (ConstantField.INDEX_LABELS.contains(code)) {
-            return ConstantField.INDEX_MAP.get(code);
-        }
-
-        if (code.length() != 6) {
-            return code;
-        }
-// logic from tushare _code_to_symbol
-        if (code.startsWith("6") || code.startsWith("5") || code.startsWith("9") || code.startsWith("11") || code.startsWith("13")) {
-            return "sh" + code;
-        }
-
-        return "sz" + code;
-    }
-
     private static void responseClose(CloseableHttpResponse response) {
         if (response != null) {
             try {
