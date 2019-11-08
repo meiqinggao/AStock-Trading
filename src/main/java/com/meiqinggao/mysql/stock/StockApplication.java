@@ -29,7 +29,7 @@ public class StockApplication implements ApplicationRunner {
 	@Autowired
 	private SinaPreviousDayPriceParser parser;
 	@Autowired
-	private RealtimeDataParser realtimeDataParser;
+    private RealtimeDataParser realtimeDataParser;
 
 	public static void main(String[] args) {
 		SpringApplication.run(StockApplication.class, args);

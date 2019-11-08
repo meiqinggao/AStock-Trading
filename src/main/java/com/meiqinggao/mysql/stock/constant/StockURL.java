@@ -17,4 +17,9 @@ public interface StockURL {
             + "\"},\n" +
             "\t\"fields\":\"ts_code,open,high,low,close,pre_close,pct_chg\"\n" +
             "}";
+
+    String CONCEPT_RIZE = "q.10jqka.com.cn/gn/";
+    String INDUSTRY_RISE_PAGE1 = "http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/1/ajax/1/%20HTTP/1.1";
+    String INDUSTRY_RISE_PAGE2 = "http://q.10jqka.com.cn/thshy/index/field/199112/order/desc/page/2/ajax/1/%20HTTP/1.1";
+
 }
