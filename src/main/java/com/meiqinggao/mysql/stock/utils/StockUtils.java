@@ -133,6 +133,59 @@ public class StockUtils {
         }
     }
 
+    public static void refreshStockAverageVolumeFor5Days(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
+        List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
+        DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));
+        HashMap<String, Double> codeToVolumeMap = new HashMap<>();
+        int days = 0;
+
+        while (days < 5) {
+            int dayOfWeek = dateTime.getDayOfWeek();
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                String date = dateTime.toString("YYYYMMdd");
+                Response response = ConnectionUtils.getDailyStockDetailedInfo(date);
+                if (response.getData().getItems().size() > 0){
+                    saveDailyVolumeToLocalMap(response, codeToVolumeMap, codes);
+                    days++;
+                }
+            }
+            dateTime = dateTime.minusDays(1);
+        }
+
+        for (Map.Entry<String, Double> codeToVolEntry : codeToVolumeMap.entrySet()) {
+            double averageVol = codeToVolEntry.getValue() / 5.0;
+            codeToVolumeMap.put(codeToVolEntry.getKey(), averageVol);
+        }
+
+        saveAverageVolToDB(stockRepository, codeToVolumeMap);
+    }
+
+    private static void saveAverageVolToDB(StockRepository stockRepository, Map<String, Double> codeToVolumeMap) {
+        for (Map.Entry<String, Double> codeToVolEntry : codeToVolumeMap.entrySet()) {
+            Stock stock = stockRepository.findByCode(codeToVolEntry.getKey());
+            stock.setAverageVolume(codeToVolEntry.getValue());
+            stockRepository.save(stock);
+        }
+    }
+
+    private static void saveDailyVolumeToLocalMap(Response response, HashMap<String, Double> codeToVolMap, List<String> codes) {
+        List<String> fields = response.getData().getFields();
+        int ts_codeIndex = fields.indexOf("ts_code");
+        int volIndex = fields.indexOf("vol");
+        List<List<Object>> items = response.getData().getItems();
+        for (List<Object> item : items) {
+            String code = item.get(ts_codeIndex).toString().substring(0, 6);
+            double vol = (double) item.get(volIndex);
+            if (codes.contains(code)) {
+                if (codeToVolMap.containsKey(code)) {
+                    codeToVolMap.put(code, codeToVolMap.get(code) + vol);
+                } else {
+                    codeToVolMap.put(code, vol);
+                }
+            }
+        }
+    }
+
     private static Map<String, Integer> initPreviousZhangTingStocks(StockRepository stockRepository) throws FileNotFoundException, UnsupportedEncodingException {
         List<String> codes = stockRepository.findAll().stream().map(Stock::getCode).collect(Collectors.toList());
         DateTime dateTime = new DateTime(DateTimeZone.forID("Asia/Shanghai"));

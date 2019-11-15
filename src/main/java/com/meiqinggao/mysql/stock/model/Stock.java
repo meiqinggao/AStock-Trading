@@ -21,4 +21,5 @@ public class Stock {
     private String stockName;
     @Column(name="recent_zt")
     private Date recentZt;
+    private Double averageVolume;
 }

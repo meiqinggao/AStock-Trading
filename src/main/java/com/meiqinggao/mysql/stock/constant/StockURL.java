@@ -15,7 +15,7 @@ public interface StockURL {
             "\t\"params\": {\"trade_date\":\""
             + "%s"
             + "\"},\n" +
-            "\t\"fields\":\"ts_code,open,high,low,close,pre_close,pct_chg\"\n" +
+            "\t\"fields\":\"ts_code,open,high,low,close,pre_close,pct_chg,vol\"\n" +
             "}";
 
     String CONCEPT_RIZE = "q.10jqka.com.cn/gn/";
