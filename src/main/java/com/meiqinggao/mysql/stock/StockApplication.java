@@ -6,6 +6,7 @@ import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import com.meiqinggao.mysql.stock.utils.SinaPreviousDayPriceParser;
 import com.meiqinggao.mysql.stock.utils.StockDataRetriever;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -16,20 +17,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Slf4j
+@RequiredArgsConstructor
 @EnableScheduling
 @EnableJpaRepositories
 @SpringBootApplication
 public class StockApplication implements ApplicationRunner {
-	@Autowired
-	private StockConceptRepository stockConceptRepository;
-	@Autowired
-	private StockRepository stockRepository;
-	@Autowired
-	private StockDataRetriever stockDataRetriever;
-	@Autowired
-	private SinaPreviousDayPriceParser parser;
-	@Autowired
-    private RealtimeDataParser realtimeDataParser;
+	private final StockConceptRepository stockConceptRepository;
+	private final StockRepository stockRepository;
+	private final StockDataRetriever stockDataRetriever;
+	private final SinaPreviousDayPriceParser parser;
+	private final RealtimeDataParser realtimeDataParser;
 
 	public static void main(String[] args) {
 		SpringApplication.run(StockApplication.class, args);

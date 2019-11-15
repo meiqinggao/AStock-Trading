@@ -5,6 +5,7 @@ import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,16 +15,13 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class RealtimeDataRetrieveScheduler {
-    @Autowired
-    private ZhangTingStocks zhangTingStocks;
-    @Autowired
-    private ZhangTingConcepts zhangTingConcepts;
-    @Autowired
-    private RealtimeDataParser realtimeDataParser;
-    @Autowired
-    private StockRepository stockRepository;
+    private final ZhangTingStocks zhangTingStocks;
+    private final ZhangTingConcepts zhangTingConcepts;
+    private final RealtimeDataParser realtimeDataParser;
+    private final StockRepository stockRepository;
 
     @Scheduled(cron = "0 24 9 ? * 1-5", zone = "CTT")
     public void resetOnMorning() throws FileNotFoundException, UnsupportedEncodingException {

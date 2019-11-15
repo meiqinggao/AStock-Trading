@@ -5,6 +5,7 @@ import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.HttpUtils;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,17 +20,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
 public class SearchController {
     private String conceptLastTime = "";
-    @Autowired
-    private StockConceptRepository stockConceptRepository;
-    @Autowired
-    private StockRepository stockRepository;
-    @Autowired
-    private ZhangTingStocks zhangTingStocks;
-    @Autowired
-    private ZhangTingConcepts zhangTingConcepts;
+    private final StockConceptRepository stockConceptRepository;
+    private final StockRepository stockRepository;
+    private final ZhangTingStocks zhangTingStocks;
+    private final ZhangTingConcepts zhangTingConcepts;
 
     @GetMapping({"/", "/search"})
     public String home(Model model) {

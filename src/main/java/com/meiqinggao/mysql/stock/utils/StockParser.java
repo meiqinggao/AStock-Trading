@@ -39,11 +39,11 @@ public class StockParser {
 
         String[] values = splitStockInfo[1].replace("\"", "").split(",");
 
-        double pre_close = Double.valueOf(values[2]);
-        double price = Double.valueOf(values[3]);
-        double high = Double.valueOf(values[4]);
-        double low = Double.valueOf(values[5]);
-        double volume = Double.valueOf(values[8]);
+        double pre_close = Double.parseDouble(values[2]);
+        double price = Double.parseDouble(values[3]);
+        double high = Double.parseDouble(values[4]);
+        double low = Double.parseDouble(values[5]);
+        double volume = Double.parseDouble(values[8]);
 
         double changePct = (price - pre_close) / pre_close * 100.0;
 

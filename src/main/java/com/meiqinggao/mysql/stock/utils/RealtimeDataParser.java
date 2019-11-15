@@ -5,6 +5,7 @@ import com.meiqinggao.mysql.stock.model.ZhangTingConcepts;
 import com.meiqinggao.mysql.stock.model.ZhangTingStock;
 import com.meiqinggao.mysql.stock.model.ZhangTingStocks;
 import com.meiqinggao.mysql.stock.repository.StockConceptRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class RealtimeDataParser {
     private List<String> excludeConcepts = Arrays.asList("标普道琼斯A股", "富时罗素概念股", "机构重仓", "参股新三板");
-    @Autowired
-    private ZhangTingStocks zhangTingStocks;
-    @Autowired
-    private ZhangTingConcepts zhangTingConcepts;
-    @Autowired
-    private StockConceptRepository stockConceptRepository;
+    private final ZhangTingStocks zhangTingStocks;
+    private final ZhangTingConcepts zhangTingConcepts;
+    private final StockConceptRepository stockConceptRepository;
 
     public void retrieveAndParseStockData() {
 	log.info("Start retrive real time stock data...");	

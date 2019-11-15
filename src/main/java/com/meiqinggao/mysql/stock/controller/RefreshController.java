@@ -6,6 +6,7 @@ import com.meiqinggao.mysql.stock.utils.HttpUtils;
 import com.meiqinggao.mysql.stock.utils.RealtimeDataParser;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,15 +18,12 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 @Slf4j
+@RequiredArgsConstructor
 @Controller
-@AllArgsConstructor
 public class RefreshController {
-    @Autowired
-    private StockRepository stockRepository;
-    @Autowired
-    private StockConceptRepository stockConceptRepository;
-    @Autowired
-    private RealtimeDataParser realtimeDataParser;
+    private final StockRepository stockRepository;
+    private final StockConceptRepository stockConceptRepository;
+    private final RealtimeDataParser realtimeDataParser;
 
     @GetMapping("/refresh/{days}")
     public String refreshStockUpLimit(@PathVariable("days") int days, Model model) throws FileNotFoundException, UnsupportedEncodingException {

@@ -2,6 +2,7 @@ package com.meiqinggao.mysql.stock.scheduler;
 
 import com.meiqinggao.mysql.stock.repository.StockRepository;
 import com.meiqinggao.mysql.stock.utils.StockUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -11,10 +12,10 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class RefreshDailyStockScheduler {
-    @Autowired
-    private StockRepository stockRepository;
+    private final StockRepository stockRepository;
 
     //刷新每天涨停股票
     @Scheduled(cron = "0 0 8,16 ? * 1-5", zone = "CTT")
